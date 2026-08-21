@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Uma Chance</title>
+<style>
+  :root {
+    --bg1: #2b1055;
+    --bg2: #1a0836;
+    --card: rgba(255,255,255,0.06);
+    --accent: #ff6fa5;
+    --accent2: #ffd166;
+    --text: #f4f1ff;
+    --muted: #c9c2e0;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: 'Georgia', 'Segoe UI', serif;
+    background: linear-gradient(160deg, var(--bg1), var(--bg2));
+    color: var(--text);
+    min-height: 100vh;
+    padding: 50px 16px 80px;
+  }
+
+  .container {
+    max-width: 640px;
+    margin: 0 auto;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 50px;
+  }
+
+  header .emoji {
+    font-size: 2.4rem;
+  }
+
+  header h1 {
+    font-size: 2.2rem;
+    margin: 10px 0 6px;
+    color: var(--accent2);
+  }
+
+  header p {
+    color: var(--muted);
+    font-size: 1.05rem;
+  }
+
+  .motivos {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-bottom: 50px;
+  }
+
+  .motivo {
+    background: var(--card);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 14px;
+    padding: 18px 20px;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+
+  .motivo .numero {
+    font-size: 1.3rem;
+    color: var(--accent);
+    font-weight: bold;
+    flex-shrink: 0;
+  }
+
+  .motivo p {
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  .formulario {
+    background: var(--card);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 18px;
+    padding: 30px 24px;
+    text-align: center;
+  }
+
+  .formulario h2 {
+    color: var(--accent2);
+    margin-top: 0;
+  }
+
+  .opcoes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin: 20px 0;
+  }
+
+  .opcoes button {
+    padding: 12px 20px;
+    border-radius: 30px;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+    font-weight: 600;
+    transition: transform 0.15s ease;
+  }
+
+  .opcoes button:hover { transform: translateY(-2px); }
+
+  .sim { background: var(--accent); color: #2b1055; }
+  .talvez { background: var(--accent2); color: #2b1055; }
+  .conversar { background: transparent; color: var(--text); border: 1px solid var(--muted) !important; }
+
+  textarea {
+    width: 100%;
+    min-height: 80px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.05);
+    color: var(--text);
+    padding: 12px;
+    font-family: inherit;
+    font-size: 0.95rem;
+    resize: vertical;
+    margin-bottom: 14px;
+  }
+
+  .enviar {
+    background: var(--accent);
+    color: #2b1055;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 30px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+  }
+
+  .resultado {
+    margin-top: 20px;
+    font-size: 1.1rem;
+    color: var(--accent2);
+    display: none;
+  }
+
+  footer {
+    text-align: center;
+    margin-top: 40px;
+    color: var(--muted);
+    font-size: 0.8rem;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="emoji">💌</div>
+    <h1>Pra Raianne❤️</h1>
+    <p>Alguns motivos pra você me dar uma chance</p>
+  </header>
+
+  <div class="motivos" id="listaMotivos"></div>
+
+  <div class="formulario">
+    <h2>E aí, topa?</h2>
+    <p style="color:var(--muted)">Escolhe uma opção (e se quiser, deixa uma mensagem)</p>
+
+    <textarea id="mensagem" placeholder="Deixa uma resposta aqui, se quiser..."></textarea>
+
+    <div class="opcoes">
+      <button class="sim" onclick="responder('Sim! 💕')">Sim!</button>
+      <button class="talvez" onclick="responder('Talvez, vamos conversar 😏')">Talvez</button>
+      <button class="conversar" onclick="responder('Me chama pra conversar 🙂')">Só quero conversar</button>
+    </div>
+
+    <div class="resultado" id="resultado"></div>
+  </div>
+
+  <footer>feito com carinho 💛</footer>
+</div>
+
+<script>
+  // ======== EDITE AQUI SEUS MOTIVOS ========
+  const motivos = [
+    "Motivo 1: acho que você é incrível e eu gostaria de conhecê-la melhor.",
+    "Motivo 2: seu sorriso ilumina meu dia e eu adoraria ver mais disso.",
+    "Motivo 3: nossa amiga thay ficaria muito feliz se a gente se desse bem.",
+    "Motivo 4: a maneira como você me faz sentir é única, e eu quero explorar isso com você.",
+  ];
+  // ==========================================
+
+  // Troque pelo seu e-mail ou WhatsApp, se quiser receber a resposta
+  const meuEmail = "daikinagato98@gmail.com";
+
+  function renderizarMotivos() {
+    const lista = document.getElementById("listaMotivos");
+    motivos.forEach((motivo, i) => {
+      const div = document.createElement("div");
+      div.className = "motivo";
+      div.innerHTML = `<div class="numero">${i + 1}</div><p>${motivo}</p>`;
+      lista.appendChild(div);
+    });
+  }
+
+  function responder(opcao) {
+    const mensagem = document.getElementById("mensagem").value;
+    const resultado = document.getElementById("resultado");
+    resultado.style.display = "block";
+    resultado.textContent = "Resposta enviada: " + opcao + (mensagem ? " — \"" + mensagem + "\"" : "");
+
+    // Abre um e-mail pronto para enviar a resposta dela pra você
+    const assunto = encodeURIComponent("Resposta: " + opcao);
+    const corpo = encodeURIComponent(opcao + (mensagem ? "\n\nMensagem: " + mensagem : ""));
+    window.location.href = `mailto:${meuEmail}?subject=${assunto}&body=${corpo}`;
+  }
+
+  renderizarMotivos();
+</script>
+
+</body>
+</html>
